@@ -314,6 +314,7 @@ calculate_stats >> send_stats
 
 Рассмотрим реализацию, которая извлекает результаты за один день и записывает их в секционированный набор данных
 ```python
+# В BashOperator можно сразу использовать синтаксис шаблонов Jinja
 fetch_events = BashOperator(
 	task_id="fetch_events",
 	bash_command=(
