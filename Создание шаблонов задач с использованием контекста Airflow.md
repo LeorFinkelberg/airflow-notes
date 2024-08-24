@@ -113,3 +113,41 @@ get_data = PythonOperator(
     dag=dag,
 )
 ```
+
+Для работы с PostgreSQL нужно установить дополнительный пакет 
+```bash
+$ pip install apache-airflow-providers-postgres
+```
+
+Сейчас в Airflow осталось лишь несколько основных операторов, таких как `BashOperator` и `PythonOperator`. Остальные вынесены в отдельные пакеты с именами вида `apache-airflow-providers-*`.
+
+Пример с `PostgresOperator`
+```python
+from airflow.providers.postgres.operators.postgres import PostgresOperator
+
+dag = DAG(..., template_searchpath="/tmp")  # путь до SQL-файла
+
+write_to_postgres = PostgresOperator(
+	task_id="write_to_postgres",
+	postgres_conn_id="my_postgres",
+	sql="postgres_query.sql",  # SQL-запрос или путь к SQL-файлу
+	dag=dag,
+)
+```
+
+`PostgresOperator` требует заполнить только два аргумента для выполнения запроса к базе данных Postgres. Сложные операции, такие как установка соединения с базой данных и его закрытие после завершения, выполняются под капотом. Аргумент `postgres_conn_id` указывает на идентификатор, содержащий учетные данные для базы данных Postgres.
+
+Добавить идентификатор подключения `my_postgres` в Airflow можно так
+```bash
+$ airflow connections add \
+     --conn-type postgres \
+     --conn-host localhost \
+	 --conn-login postgres \
+	 --conn-password mysecretpassword \
+	 my_postgres  # идентификатор подключения
+```
+
+Для отображения шаблонных значений можно поступить так [[Список литературы#^ae6dac]]<c. 105>
+```bash
+$ airflow tasks render [dag_id] [task_id] ...
+```
